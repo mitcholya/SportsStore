@@ -1,7 +1,10 @@
 <div class="container">
     <div class="row">
-        <div class="col-12 navbar navbar-inverse bg-inverse">
+        <div class="col-10 navbar navbar-inverse bg-inverse">
             <a class="navbar-brand" href="#">SPORTS STORE</a>
+        </div>
+        <div class="col-2 bg-inverse p-3">
+            <cart-summary  style="color: white;"></cart-summary>
         </div>
     </div>
     <div class="row">
@@ -17,13 +20,47 @@
         <div class="col-9">
             <div *ngFor="let product of products" class="card card-outline-primary m-2">
                 <h4 class="card-header">
-                    {{product.name}}
-                    <span class="badge badge-pill badge-primary">
-                        {{ product.price | currency:"USD":'symbol-narrow':"2.2-2" }}
-                    </span>
+                    <div class="row">
+                        <div class="col-8">
+                                {{product.name}}
+                        </div>
+                        <div class="col-4 text-right">
+                                <span class="pull-xs-right badge badge-pill badge-primary">
+                                        {{ product.price | currency:"USD":'symbol-narrow':"2.2-2" }}
+                                </span>
+                        </div>
+                    </div>
                 </h4>
-                <div class="card-text p-1">{{product.description}}</div>
+                <div class="card-text p-1">
+                    <div class="row">
+                        <div class="col-8">
+                            {{product.description}}
+                        </div>
+                        <div class="col-4 text-right">
+                            <button class="btn btn-success btn-sm pull-xs-right" (click)="addProductToCart(product)">
+                                    Add To Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class=" col-3 form-inline pull-xs-left m-r-1">
+                    <select class="form-control" [value]="productsPerPage" (change)="changePageSize($event.target.value)">
+                        <option value="3">3 per Page</option>
+                        <option value="4">4 per Page</option>
+                        <option value="6">6 per Page</option>
+                        <option value="8">8 per Page</option>
+                    </select>
+                </div>
+                <div class=" col-9 btn-group pull-xs-right">
+                    <button *counter="let page of pageCount" (click)="changePage(page)" class="btn btn-outline-primary" [class.active]="page == selectedPage">
+                        {{page}}
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
     </div>
 
