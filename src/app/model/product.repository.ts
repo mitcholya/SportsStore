@@ -10,6 +10,7 @@ export class ProductRepository {
     constructor(private dataSource: StaticDataSource) {
 
         dataSource.getProducts().subscribe(data => {
+            console.log(data);
             this.products = data;
             this.categories = data.map(p => p.category)
                 .filter((c, index, array) => array.indexOf(c) == index).sort();
