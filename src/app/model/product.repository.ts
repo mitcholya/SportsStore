@@ -1,33 +1,63 @@
 import { Injectable } from "@angular/core";
 import { Product } from "./product.model";
 import { StaticDataSource } from "./static.datasource";
+import { HttpResponse, HttpEvent, HttpEventType } from '@angular/common/http';
+import { RestDataSource } from "./rest.datasource";
 
 @Injectable()
 export class ProductRepository {
     private products: Product[] = [];
     private categories: string[] = [];
 
-    constructor(private dataSource: StaticDataSource) {
+    constructor(private dataSource: RestDataSource) {
 
-        dataSource.getProducts().subscribe(data => {
-            console.log(data);
-            this.products = data;
-            this.categories = data.map(p => p.category)
+        dataSource.getProducts()
+        .subscribe(response => {
+            //console.log(response.body);
+            let data = response;
+            this.products = <Product[]>data;
+            this.categories = <string[]>data.map(p => p.category)
                 .filter((c, index, array) => array.indexOf(c) == index).sort();
-        });
+            });
         
     }
 
     getProducts(category: string = null): Product[] {
+        //console.log(this.products);
         return this.products
             .filter(p => category == null || category == p.category);
     }
 
     getProduct(id: number): Product {
+        
         return this.products.find(p => p.id == id);
     }
 
     getCategories(): string[] {
         return this.categories;
+    }
+
+    saveProduct(product: Product) {
+        //console.log(this.products);
+        if (product.id == null || product.id == 0) {
+            this.dataSource.saveProduct(product)
+                .subscribe(p => { 
+                    console.log(p);
+                    this.products.push(p);
+                });
+        } else {
+            this.dataSource.updateProduct(product)
+                .subscribe(p => {
+                    this.products.splice(this.products.
+                        findIndex(p => p.id == product.id), 1, product);
+                });
+        }
+    }
+    
+    deleteProduct(id: number) {
+        this.dataSource.deleteProduct(id).subscribe(p => {
+            this.products.splice(this.products.
+                findIndex(p => p.id == id), 1);
+        })
     }
 }
